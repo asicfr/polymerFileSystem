@@ -1,0 +1,101 @@
+/* 
+Reste à faire : 
+- refresh après ajout de fichier
+- est-ce bien isolé d'une autre instance de fileSystemManager ?
+- FileError deprecated
+- suppression fichier
+- tests
+- mettre en valeur la liste des fichier
+- bloc latéral de présentation du fichier selectionné
+ */
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<polymer-element name="polymer-filesystem"  attributes="">
+  <template>
+    <style>
+      /* styles for the custom element itself - lowest specificity */
+      :host { display: block; }
+    </style>
+
+	<template if="{{ systemOk === false }}">
+        Your browser don't support FileSystem api. Download chrome : https://www.google.com/intl/fr_fr/chrome/browser/
+	</template>
+	<template if="{{ systemError !== null }}">
+        Error : {{systemError}}
+	</template>
+
+	<template if="{{ systemOk === true }}">
+		<h1>Polymer local files manager</h1>
+		<ul id="filelist"></ul>
+		<input type="file" on-change="{{addSomeFile}}"/>
+		<button on-click="{{refreshList}}">refresh</button><br/>
+		<template id="containerlist" if="{{ myfiles.length > 0 }}">
+		<ul>
+			<template id="filelist" repeat="{{onefile in myfiles}}">
+				<li><a href="{{onefile.fileURL}}">{{onefile.name}}</a></li>
+			</template>
+		</ul>	
+		</template>
+		<template id="emptylist" if="{{ myfiles.length < 1 }}">
+			empty list
+		</template>
+	</template>
+  </template>
+  
+  <script src="../bower_components/filesystem/filesystemapi.js"></script>  
+  <script>
+	(function() {
+	    var fsmGlogbal = new fileSystemManager();
+
+		// Start polymer
+		Polymer('polymer-filesystem', {
+			created: function() {
+				console.log("created");
+				this.fsm = fsmGlogbal;
+				console.log("fin created");
+			},
+			ready: function() {
+				console.log("ready");
+				this.systemOk = this.fsm.isInit();
+				this.systemError = this.fsm.getError();
+				console.log("ready then call loadFiles");
+				this.myfiles = [];
+
+				// TODO a commenter
+				this.fsm.setCallBackAfterLoad(this.callBackRefreshList.bind(this));
+				this.fsm.loadFiles();
+				console.log("fin ready");
+			},
+			refreshList: function(event, detail, sender) {
+				console.log("refreshList");
+				this.fsm.loadFiles();
+				console.log("refreshList finished");
+			},
+			callBackRefreshList: function(newList) {
+				console.log("newList size : " + newList.length);
+				this.myfiles = newList;
+			},
+			addSomeFile: function(event, detail, sender) {
+				console.log("addSomeFile");
+				this.fsm.addFile(sender);
+			},
+			systemOkChanged: function(oldValue, newValue) {
+				console.log("changement on systemOk : " + oldValue + " -> " + newValue);
+	      	},
+			systemErrorChanged: function(oldValue, newValue) {
+				console.log("changement on systemError : " + oldValue + " -> " + newValue);
+	      	},
+			fsmChanged: function(oldValue, newValue) {
+				console.log("changement on fsm : " + oldValue + " -> " + newValue);
+	      	},
+			myfilesChanged: function(oldValue, newValue) {
+				console.log("changement on myfiles :" + oldValue + " -> " + newValue);
+	      	}
+	    });  
+
+
+  	})();
+
+
+		
+  </script>
+</polymer-element>

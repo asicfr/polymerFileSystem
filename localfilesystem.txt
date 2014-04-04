@@ -1,0 +1,54 @@
+#webcomponents
+polymer tag pour LocalFileSystem / angularjs directive pour LocalFileSystem
+---------------------------------------------------------------------------
+
+http://www.html5rocks.com/en/tutorials/file/filesystem/
+http://www.w3.org/TR/file-system-api/#widl-LocalFileSystem-PERSISTENT
+http://otaqui.com/blog/1594/the-super-quick-start-guide-to-yeoman-grunt-and-bower/
+http://www.polymer-project.org/
+http://jsfiddle.net/asicfr/Y87jh/
+
+exemple d'element polymer : 
+https://github.com/PolymerLabs/google-map/blob/master/google-map.html
+
+install nodejs and npm
+install git
+npm install -g yo grunt-cli bower
+npm cache clean
+npm update npm -g
+yo polymer
+grunt server
+
+---------------------------------------------------------
+
+
+Filesystem API provides a method of reading and writing files to a sandboxed file system on the user's local file system.
+Supported only by Chrome 18+ with webkit prefix. Check out http://caniuse.com/filesystem for a better understanding of the support.
+
+
+Directories and System
+http://www.w3.org/TR/file-system-api/
+
+https://developer.mozilla.org/en-US/docs/WebGuide/API/File_System
+
+LocalFileSystem
+fileEntry.toURL();
+
+window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+
+
+
+
+window.webkitRequestFileSystem(window.PERSISTENT , 1024*1024, SaveDatFileBro);
+
+navigator.webkitPersistentStorage.requestQuota(1024*1024, function() {
+ &nbsp;window.webkitRequestFileSystem(window.PERSISTENT , 1024*1024, SaveDatFileBro);
+})
+
+function SaveDatFileBro(localstorage) {
+  localstorage.root.getFile("info.txt", {create: true});
+}
+
+
+filesystem:http://www.example.com/persistent/info.txt
+lastModifiedDate
