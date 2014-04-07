@@ -1,101 +1,104 @@
-/* 
-Reste à faire : 
-- refresh après ajout de fichier
-- est-ce bien isolé d'une autre instance de fileSystemManager ?
-- FileError deprecated
-- suppression fichier
-- tests
-- mettre en valeur la liste des fichier
-- bloc latéral de présentation du fichier selectionné
- */
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <polymer-element name="polymer-filesystem"  attributes="">
-  <template>
-    <style>
-      /* styles for the custom element itself - lowest specificity */
-      :host { display: block; }
-    </style>
+	<template>
+	    <style>
+	      /* styles for the custom element itself - lowest specificity */
+	      :host { display: block; }
+	    </style>
 
-	<template if="{{ systemOk === false }}">
-        Your browser don't support FileSystem api. Download chrome : https://www.google.com/intl/fr_fr/chrome/browser/
-	</template>
-	<template if="{{ systemError !== null }}">
-        Error : {{systemError}}
-	</template>
 
-	<template if="{{ systemOk === true }}">
-		<h1>Polymer local files manager</h1>
-		<ul id="filelist"></ul>
-		<input type="file" on-change="{{addSomeFile}}"/>
-		<button on-click="{{refreshList}}">refresh</button><br/>
-		<template id="containerlist" if="{{ myfiles.length > 0 }}">
-		<ul>
-			<template id="filelist" repeat="{{onefile in myfiles}}">
-				<li><a href="{{onefile.fileURL}}">{{onefile.name}}</a></li>
+		<template if="{{ systemOk === false }}">
+			Your browser don't support FileSystem api. <a href="https://www.google.com/intl/fr_fr/chrome/browser/">Download chrome</a><br/>
+		</template>
+		<template if="{{ systemError !== null }}">
+			Error : {{systemError}}<br/>
+		</template>
+
+		<template if="{{ systemOk === true }}">
+			<button on-click="{{refreshList}}" class="btn btn-success btn-xs btn-block">
+				<span class="glyphicon glyphicon-refresh"></span>
+				Refresh the list
+			</button>
+
+			<span class="btn btn-warning btn-xs btn-block btn-file">
+			    <span class="glyphicon glyphicon-cloud-upload"></span>
+				Upload a new File in the list
+				<input type="file" on-change="{{addSomeFile}}" />
+			</span>
+			<br/>
+
+			<template id="containerlist" if="{{ myfiles.length > 0 }}">
+				<h3 class="titrelist">List of existing files :</h3>
+				<template id="filelist" repeat="{{onefile in myfiles}}">
+					<button on-click="{{removeSomeFile}}" class="btn btn-danger btn-xs">
+						<span class="glyphicon glyphicon-remove"></span> Remove
+					</button>
+					<button on-click="{{openSomeFile}}" class="btn btn-default btn-xs" type="button">
+						<span class="glyphicon glyphicon-eye-open"></span>
+	      				{{onefile.name}}
+	      				<span class="label label-warning">{{onefile.fileSize}} bytes</span>
+	      				<span class="label label-info">Last modified on {{onefile.fileModificationTime}} </span>
+	    			</button>
+	    			<br/>
+				</template>
 			</template>
-		</ul>	
-		</template>
-		<template id="emptylist" if="{{ myfiles.length < 1 }}">
-			empty list
+			<template id="emptylist" if="{{ myfiles.length < 1 }}">
+				Empty list
+			</template>
 		</template>
 	</template>
-  </template>
-  
-  <script src="../bower_components/filesystem/filesystemapi.js"></script>  
-  <script>
-	(function() {
-	    var fsmGlogbal = new fileSystemManager();
 
-		// Start polymer
-		Polymer('polymer-filesystem', {
-			created: function() {
-				console.log("created");
-				this.fsm = fsmGlogbal;
-				console.log("fin created");
-			},
-			ready: function() {
-				console.log("ready");
-				this.systemOk = this.fsm.isInit();
-				this.systemError = this.fsm.getError();
-				console.log("ready then call loadFiles");
-				this.myfiles = [];
+	  
+	<script src="../bower_components/filesystem/filesystemapi.js"></script>  
+	<script>
+		(function() {
+		    var fsmGlogbal = new fileSystemManager();
 
-				// TODO a commenter
-				this.fsm.setCallBackAfterLoad(this.callBackRefreshList.bind(this));
-				this.fsm.loadFiles();
-				console.log("fin ready");
-			},
-			refreshList: function(event, detail, sender) {
-				console.log("refreshList");
-				this.fsm.loadFiles();
-				console.log("refreshList finished");
-			},
-			callBackRefreshList: function(newList) {
-				console.log("newList size : " + newList.length);
-				this.myfiles = newList;
-			},
-			addSomeFile: function(event, detail, sender) {
-				console.log("addSomeFile");
-				this.fsm.addFile(sender);
-			},
-			systemOkChanged: function(oldValue, newValue) {
-				console.log("changement on systemOk : " + oldValue + " -> " + newValue);
-	      	},
-			systemErrorChanged: function(oldValue, newValue) {
-				console.log("changement on systemError : " + oldValue + " -> " + newValue);
-	      	},
-			fsmChanged: function(oldValue, newValue) {
-				console.log("changement on fsm : " + oldValue + " -> " + newValue);
-	      	},
-			myfilesChanged: function(oldValue, newValue) {
-				console.log("changement on myfiles :" + oldValue + " -> " + newValue);
-	      	}
-	    });  
+			// Start polymer
+			Polymer('polymer-filesystem', {
+				created: function() {
+					console.log("created");
+					this.fsm = fsmGlogbal;
+					console.log("fin created");
+				},
+				ready: function() {
+					console.log("ready");
+					this.systemOk = this.fsm.isInit();
+					this.systemError = this.fsm.getError();
+					console.log("ready then call loadFiles");
+					this.myfiles = [];
 
+					// bind function 'callBackRefreshList' with 'this' current context
+					this.fsm.setCallBackAfterLoad(this.callBackRefreshList.bind(this));
+					this.fsm.loadFiles();
+					console.log("fin ready");
+				},
+				refreshList: function(event, detail, sender) {
+					console.log("refreshList");
+					this.fsm.loadFiles();
+					console.log("refreshList finished");
+				},
+				callBackRefreshList: function(newList) {
+					console.log("newList size : " + newList.length);
+					this.myfiles = newList;
+				},
+				openSomeFile: function(event, detail, sender) {
+					console.log("openSomeFile");
+					window.open(sender.templateInstance.model.onefile.fileURL)
+				},
+				removeSomeFile: function(event, detail, sender) {
+					console.log("removeSomeFile");
+					// access the current named model instance that in a template repeat
+					var fileName = sender.templateInstance.model.onefile.name;
+					this.fsm.removeFile(fileName);
+				},
+				addSomeFile: function(event, detail, sender) {
+					console.log("addSomeFile");
+					this.fsm.addFile(sender);
+		      	}
+		    });  
 
-  	})();
-
-
-		
-  </script>
+	  	})();
+			
+	</script>
 </polymer-element>

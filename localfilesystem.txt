@@ -2,6 +2,17 @@
 polymer tag pour LocalFileSystem / angularjs directive pour LocalFileSystem
 ---------------------------------------------------------------------------
 
+/* 
+Reste à faire : 
+- tout 1er lancement : erreur ou pb !!!!!!!!!!
+- est-ce bien isolé d'une autre instance de fileSystemManager ?
+- FileError deprecated
+- tests
+- licences
+- test plusieurs elements sur une page
+- créer (sans ajouter) un nouveau fichier texte
+ */
+
 http://www.html5rocks.com/en/tutorials/file/filesystem/
 http://www.w3.org/TR/file-system-api/#widl-LocalFileSystem-PERSISTENT
 http://otaqui.com/blog/1594/the-super-quick-start-guide-to-yeoman-grunt-and-bower/
@@ -18,6 +29,10 @@ npm cache clean
 npm update npm -g
 yo polymer
 grunt server
+
+
+bower install --save bootstrap
+
 
 ---------------------------------------------------------
 
