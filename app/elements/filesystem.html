@@ -1,3 +1,11 @@
+<!-- 
+ * Html5 LocalFileSystem polymer webcomponent  
+ *
+ * © AOÛT 2010 - MAI 2014 | Stéphane Labbé
+ * Released under the MIT license
+ * https://github.com/asicfr/polymerFileSystem/blob/master/LICENSE.txt
+ -->
+
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <polymer-element name="polymer-filesystem"  attributes="">
 	<template>
@@ -8,10 +16,14 @@
 
 
 		<template if="{{ systemOk === false }}">
-			Your browser don't support FileSystem api. <a href="https://www.google.com/intl/fr_fr/chrome/browser/">Download chrome</a><br/>
+			<div class="alert alert-danger">
+				Your browser don't support FileSystem api. <a href="https://www.google.com/intl/fr_fr/chrome/browser/">Please, download chrome</a><br/>
+			</div>
 		</template>
 		<template if="{{ systemError !== null }}">
-			Error : {{systemError}}<br/>
+			<div class="alert alert-danger">
+				Error : {{systemError}}<br/>
+			</div>
 		</template>
 
 		<template if="{{ systemOk === true }}">
@@ -52,31 +64,33 @@
 	<script src="../bower_components/filesystem/filesystemapi.js"></script>  
 	<script>
 		(function() {
-		    var fsmGlogbal = new fileSystemManager();
 
 			// Start polymer
 			Polymer('polymer-filesystem', {
 				created: function() {
 					console.log("created");
-					this.fsm = fsmGlogbal;
+					// bind function 'callBackRefreshList' and 'callBackFsmChangeState' with 'this' current context
+					this.fsm = new fileSystemManager(this.callBackFsmChangeState.bind(this));
+					this.fsm.setCallBackAfterLoad(this.callBackRefreshList.bind(this));
 					console.log("fin created");
 				},
 				ready: function() {
 					console.log("ready");
-					this.systemOk = this.fsm.isInit();
-					this.systemError = this.fsm.getError();
 					console.log("ready then call loadFiles");
 					this.myfiles = [];
-
-					// bind function 'callBackRefreshList' with 'this' current context
-					this.fsm.setCallBackAfterLoad(this.callBackRefreshList.bind(this));
-					this.fsm.loadFiles();
 					console.log("fin ready");
 				},
 				refreshList: function(event, detail, sender) {
 					console.log("refreshList");
 					this.fsm.loadFiles();
 					console.log("refreshList finished");
+				},
+				callBackFsmChangeState: function() {
+					this.systemOk = this.fsm.isInit();
+					this.systemError = this.fsm.getError();
+					if (this.systemOk) {
+						this.fsm.loadFiles();
+					}
 				},
 				callBackRefreshList: function(newList) {
 					console.log("newList size : " + newList.length);
