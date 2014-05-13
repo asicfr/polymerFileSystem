@@ -1,7 +1,7 @@
 <!-- 
  * Html5 LocalFileSystem polymer webcomponent  
  *
- * © AOÛT 2010 - MAI 2014 | Stéphane Labbé
+ * AOUT 2010 - MAI 2014 | Stephane Labbe
  * Released under the MIT license
  * https://github.com/asicfr/polymerFileSystem/blob/master/LICENSE.txt
  -->
@@ -76,16 +76,14 @@
 				},
 				ready: function() {
 					console.log("ready");
-					console.log("ready then call loadFiles");
 					this.myfiles = [];
-					console.log("fin ready");
 				},
 				refreshList: function(event, detail, sender) {
 					console.log("refreshList");
 					this.fsm.loadFiles();
-					console.log("refreshList finished");
 				},
 				callBackFsmChangeState: function() {
+					console.log("callBackFsmChangeState");
 					this.systemOk = this.fsm.isInit();
 					this.systemError = this.fsm.getError();
 					if (this.systemOk) {
